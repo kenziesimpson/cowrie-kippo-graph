@@ -1,0 +1,35 @@
+version: '3.8'
+
+services: 
+    db:
+        build: honeypot-db
+        restart: always
+        environment: 
+            MYSQL_DATABASE: 'cowriedb'
+            MYSQL_USER: 'cowrie'
+            MYSQL_PASSWORD: 'honey'
+            # Disable strict mode   
+            MYSQL_MYSQLD_SQL_MODE: 'IGNORE_SPACE,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+        ports: 
+            - '3306:3306'
+        volumes: 
+            - cowrie-db:/var/lib/mysql 
+
+    honeypot: 
+        build: cowrie-honeypot
+        restart: always
+        environment: 
+            COWRIE_OUTPUT_MYSQL_HOST: 'localhost'
+            COWRIE_OUTPUT_MYSQL_DATABASE: 'cowriedb'
+            COWRIE_OUTPUT_MYSQL_USERNAME: 'cowrie'
+            COWRIE_OUTPUT_MYSQL_PASSWORD: 'honey'
+            COWRIE_OUTPUT_MYSQL_PORT: '3306'
+            COWRIE_OUTPUT_MYSQL_DEBUG: 'true'
+            COWRIE_OUTPUT_MYSQL_ENABLED: 'true'
+        ports:
+            - '2222:2222'
+        expose: 
+            - '2222'
+
+volumes: 
+    cowrie-db: 
